@@ -21,8 +21,6 @@ const sync = async () => {
       date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );`;
 	await client.query(SQL);
-	// await deleteAuthor(authors[0].id);
-	// const articles = await createArticle("words", "words words words words");
 };
 
 const readAuthors = async () => {
@@ -56,15 +54,32 @@ const updateAuthor = async author => {
 	]);
 };
 
-// const readArticles = async () => {
-// 	const SQL = `SELECT * FROM articles`;
-// 	const response = await client.query(SQL);
-// 	return response.rows;
-// };
-// const createArticle = async (title, body) => {
-// 	const SQL = `INSERT INTO articles(id, title, body) values( $1, $2, $3)`;
-// 	await client.query(SQL, [uuid(), title, body]);
-// };
+const readArticles = async () => {
+	const SQL = `SELECT * FROM articles`;
+	const response = await client.query(SQL);
+	return response.rows;
+};
+
+const readArticle = async id => {
+	const SQL = `SELECT * FROM articles WHERE id=$1`;
+	const response = await client.query(SQL, [id]);
+	return response.rows;
+};
+
+const deleteArticle = async id => {
+	const SQL = `DELETE FROM articles WHERE id=$1`;
+	await client.query(SQL, [id]);
+};
+
+const createArticle = async (authId, title, body) => {
+	const SQL = `INSERT INTO articles(id, author_id, title, body) values( $1, $2, $3, $4)`;
+	await client.query(SQL, [uuid(), authId, title, body]);
+};
+
+const updateArticle = async article => {
+	const SQL = `UPDATE articles set title = $1, body = $2 WHERE id=$3`;
+	const response = client.query(SQL, [article.title, article.body, article.id]);
+};
 
 sync();
 
@@ -74,5 +89,10 @@ module.exports = {
 	readAuthor,
 	deleteAuthor,
 	createAuthors,
-	updateAuthor
+	updateAuthor,
+	readArticles,
+	readArticle,
+	deleteArticle,
+	createArticle,
+	updateArticle
 };
